@@ -4,3 +4,7 @@ Port: 8888
 Auth:
   AccessSecret: hfksj-fannc-afjknn-af23fsf
   AccessExpire: 60
+UserRpc:
+  Etcd:
+    Hosts: 127.0.0.1:2379
+    Key: user.rpc

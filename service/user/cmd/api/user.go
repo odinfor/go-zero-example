@@ -3,6 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/tal-tech/go-zero/core/logx"
+	"github.com/tal-tech/go-zero/rest/httpx"
+	errorx "go-zero-example/common"
+	"net/http"
 
 	"go-zero-example/service/user/cmd/api/internal/config"
 	"go-zero-example/service/user/cmd/api/internal/handler"
@@ -24,7 +28,24 @@ func main() {
 	server := rest.MustNewServer(c.RestConf)
 	defer server.Stop()
 
+	// 全局中间件
+	server.Use(func(next http.HandlerFunc) http.HandlerFunc {
+		return func(writer http.ResponseWriter, request *http.Request) {
+			logx.Info("global middleware print")
+		}
+	})
+
 	handler.RegisterHandlers(server, ctx)
+
+	// 自定义错误
+	httpx.SetErrorHandler(func(err error) (int, interface{}) {
+		switch e := err.(type) {
+		case *errorx.CodeError:
+			return http.StatusOK, e.Data()
+		default:
+			return http.StatusInternalServerError, nil
+		}
+	})
 
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 	server.Start()
