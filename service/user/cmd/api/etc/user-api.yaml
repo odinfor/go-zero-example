@@ -3,9 +3,9 @@ Host: 0.0.0.0
 Port: 8888
 Mysql:
   DataSource: root:123456@tcp(localhost)go-example/?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
-CacheRedis:
+Redis:
   - Host: 127.0.0.1:6379
-    Pass: 123456
+    Pass: ""
     Type: node
 Auth:
   AccessSecret: hfksj-fannc-afjknn-af23fsf

@@ -10,8 +10,7 @@ type Config struct {
 	Mysql struct{
 		DataSource string
 	}
-
-	CacheRedis cache.CacheConf
+	Redis cache.CacheConf
 	Auth struct{
 		AccessSecret string
 		AccessExpire int64
