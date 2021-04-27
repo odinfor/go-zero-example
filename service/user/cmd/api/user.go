@@ -32,6 +32,7 @@ func main() {
 	server.Use(func(next http.HandlerFunc) http.HandlerFunc {
 		return func(writer http.ResponseWriter, request *http.Request) {
 			logx.Info("global middleware print")
+			next(writer, request) // 注意调用next
 		}
 	})
 

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	"go-zero-example/service/user/cmd/api/internal/logic"
@@ -20,6 +21,7 @@ func loginHandler(ctx *svc.ServiceContext) http.HandlerFunc {
 
 		l := logic.NewLoginLogic(r.Context(), ctx)
 		resp, err := l.Login(req)
+		fmt.Println(resp)
 		if err != nil {
 			httpx.Error(w, err)
 		} else {

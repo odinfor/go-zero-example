@@ -10,4 +10,6 @@ Redis:
 Auth:
   AccessSecret: hfksj-fannc-afjknn-af23fsf
   AccessExpire: 60
+Log:
+  Level: "info"
 

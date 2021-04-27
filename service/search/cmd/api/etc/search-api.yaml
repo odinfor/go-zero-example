@@ -1,10 +1,11 @@
 Name: search-api
 Host: 0.0.0.0
-Port: 8888
+Port: 8889
 Auth:
   AccessSecret: hfksj-fannc-afjknn-af23fsf
   AccessExpire: 60
 UserRpc:
   Etcd:
-    Hosts: 127.0.0.1:2379
+    Hosts:
+    - 127.0.0.1:2379
     Key: user.rpc

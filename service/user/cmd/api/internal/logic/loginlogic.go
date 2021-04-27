@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	errorx "go-zero-example/common"
 	"go-zero-example/service/user/model"
@@ -38,14 +39,18 @@ func (l *LoginLogic) getJwtToken(secretKey string, iat, seconds, userId int64) (
 }
 
 func (l *LoginLogic) Login(req types.LoginRequest) (*types.LoginReply, error) {
-	// todo: add your logic here and delete this line
+	fmt.Println(req)
+	logx.Info(req)
 	if len(strings.TrimSpace(req.Username)) == 0 || len(strings.TrimSpace(req.Password)) == 0 {
 		return nil, errorx.NewDefaultError("参数错误")
 	}
 
 	userInfo, err := l.svcCtx.UserModel.FindOneByName(req.Username)
+	fmt.Println(userInfo)
+	logx.Info(userInfo)
 	switch err {
 	case nil:
+		fmt.Println("nil")
 	case model.ErrNotFound:
 		return nil, errorx.NewDefaultError("用户名不存在")
 	default:
