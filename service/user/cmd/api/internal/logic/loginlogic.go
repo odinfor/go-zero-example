@@ -34,47 +34,46 @@ func (l *LoginLogic) getJwtToken(secretKey string, iat, seconds, userId int64) (
 	claims["exp"] = iat + seconds
 	claims["iat"] = iat
 	claims["userId"] = userId
-	token := jwt.New(jwt.SigningMethodES256)
+	token := jwt.New(jwt.SigningMethodHS256)
+	token.Claims = claims
+
 	return token.SignedString([]byte(secretKey))
 }
 
 func (l *LoginLogic) Login(req types.LoginRequest) (*types.LoginReply, error) {
-	fmt.Println(req)
-	logx.Info(req)
 	if len(strings.TrimSpace(req.Username)) == 0 || len(strings.TrimSpace(req.Password)) == 0 {
 		return nil, errorx.NewDefaultError("参数错误")
 	}
 
 	userInfo, err := l.svcCtx.UserModel.FindOneByName(req.Username)
-	fmt.Println(userInfo)
-	logx.Info(userInfo)
 	switch err {
 	case nil:
-		fmt.Println("nil")
+		if userInfo.Password != req.Password {
+			return nil, errorx.NewDefaultError("用户密码不正确")
+		}
+
+		// 鉴权
+		now := time.Now().Unix()
+		accessExpire := l.svcCtx.Config.Auth.AccessExpire
+		jwtToken, err := l.getJwtToken(l.svcCtx.Config.Auth.AccessSecret, now, l.svcCtx.Config.Auth.AccessExpire, userInfo.Id)
+		if err != nil {
+			logx.Errorf("jwt token error: %v", err)
+			return &types.LoginReply{}, errorx.NewDefaultError(err.Error())
+		}
+
+		fmt.Printf("get jwt token: %s", jwtToken)
+
+		return &types.LoginReply{
+			Id:           userInfo.Id,
+			Name:         userInfo.Name,
+			Gender:       userInfo.Gender,
+			AccessToken:  jwtToken,
+			AccessExpire: now + accessExpire,
+			RefreshAfter: now + accessExpire/2,
+		}, nil
 	case model.ErrNotFound:
 		return nil, errorx.NewDefaultError("用户名不存在")
 	default:
 		return nil, err
 	}
-
-	if userInfo.Password != req.Password {
-		return nil, errorx.NewDefaultError("用户密码不正确")
-	}
-
-	// 鉴权
-	now := time.Now().Unix()
-	accessExpire := l.svcCtx.Config.Auth.AccessExpire
-	jwtToken, err := l.getJwtToken(l.svcCtx.Config.Auth.AccessSecret, now, l.svcCtx.Config.Auth.AccessExpire, userInfo.Id)
-	if err != nil {
-		return nil, err
-	}
-
-	return &types.LoginReply{
-		Id:           userInfo.Id,
-		Name:         userInfo.Name,
-		Gender:       userInfo.Gender,
-		AccessToken:  jwtToken,
-		AccessExpire: now + accessExpire,
-		RefreshAfter: now + accessExpire/2,
-	}, nil
 }

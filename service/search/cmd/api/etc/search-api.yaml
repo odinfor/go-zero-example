@@ -2,7 +2,7 @@ Name: search-api
 Host: 0.0.0.0
 Port: 8889
 Auth:
-  AccessSecret: hfksj-fannc-afjknn-af23fsf
+  AccessSecret: f216736f-9d45-4a93-b169-3100e12c533e
   AccessExpire: 60
 UserRpc:
   Etcd:
